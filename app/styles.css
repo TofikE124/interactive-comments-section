@@ -1,0 +1,116 @@
+/* Comment Card */
+
+.comment-card {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, fit-content);
+  grid-template-areas:
+    "header header"
+    "content content"
+    "vote reply";
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.comment-card__header {
+  grid-area: header;
+  display: flex;
+  gap: 1rem;
+}
+
+.comment-card__header__avatar {
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.comment-card__header__user {
+  color: var(--Dark-Blue);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.comment-card__header__date {
+  font-weight: 400;
+  color: var(--Grayish-Blue);
+}
+
+.comment-card__content {
+  grid-area: content;
+}
+
+.comment-card__vote {
+  grid-area: vote;
+}
+
+.comment-card__reply {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: fit-content;
+  justify-self: end;
+  text-align: right;
+  font-weight: 500;
+  color: var(--Moderate-Blue);
+}
+
+@media (min-width: 768px) {
+  .comment-card {
+    align-items: center;
+    padding: 1.5rem;
+    max-width: 730px;
+    grid-template-columns: 40px 1fr 100px;
+    column-gap: 1.5rem;
+    row-gap: 1rem;
+    grid-template-areas:
+      "vote header reply"
+      "vote content content";
+  }
+}
+
+/* Components */
+
+.updown-vote {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  background-color: var(--Very-Light-Gray);
+  width: 100px;
+  height: 40px;
+  padding: 1rem;
+  border-radius: 10px;
+  gap: 0;
+}
+
+.updown-vote > button {
+  padding: 0;
+  margin: 0;
+  color: var(--Light-Grayish-Blue);
+  transition: color 200ms;
+  font-size: 1.2rem;
+}
+
+.updown-vote > button:hover {
+  color: var(--Moderate-Blue, #5357b6);
+}
+
+.updown-vote > button:active,
+.updown-vote > button:focus {
+  outline: 0;
+}
+
+.updown-vote > p {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .updown-vote {
+    flex-direction: column;
+    width: 40px;
+    height: 100px;
+    padding: 0.75rem 0;
+  }
+}

@@ -3,25 +3,85 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --Very-Light-Gray: #f5f6fa;
+  --Grayish-Blue: #67727e;
+  --Light-Grayish-Blue: #c5c6ef;
+  --Moderate-Blue: #5357b6;
+  --Dark-Blue: #334253;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+/*====================
+        Resets
+======================*/
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Reset margins */
+body,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+figure,
+picture,
+ul {
+  margin: 0;
+}
+
+/* Set up the body */
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Make images and pictures easier to work with */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Make forms easier to work with */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* remove animations for people who've turned them off */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: var(--Very-Light-Gray);
+  font-family: "Rubik", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--Grayish-Blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+@media (min-width: 768px) {
+  body {
+    padding: 4rem;
+  }
 }
