@@ -4,6 +4,7 @@
 
 :root {
   --Very-Light-Gray: #f5f6fa;
+  --Light-Gray: #e9ebf0;
   --Grayish-Blue: #67727e;
   --Light-Grayish-Blue: #c5c6ef;
   --Moderate-Blue: #5357b6;
@@ -54,6 +55,7 @@ button,
 textarea,
 select {
   font: inherit;
+  pointer-events: all;
 }
 
 /* remove animations for people who've turned them off */
@@ -69,19 +71,30 @@ select {
 }
 
 body {
-  background: var(--Very-Light-Gray);
+  background: var(--Very-Light-Gray) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+main {
+  max-width: 730px;
+  width: 100%;
   font-family: "Rubik", sans-serif;
   font-weight: 400;
   line-height: 1.5;
   color: var(--Grayish-Blue);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  flex-direction: column;
+  padding: 1rem;
 }
 
 @media (min-width: 768px) {
-  body {
-    padding: 4rem;
+  main {
+    padding: 3rem;
   }
+}
+
+header {
+  padding-block: 1rem;
 }

@@ -1,11 +1,9 @@
-import "./styles.css";
+"use client";
 
-import avatar from "../public/images/avatars/image-amyrobson.webp";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main>
-
-    </main>
-  );
+  const router = useRouter();
+  router.push("/comments");
+  return <main></main>;
 }

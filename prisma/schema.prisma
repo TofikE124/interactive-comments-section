@@ -11,10 +11,15 @@ datasource db {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  publisher   User      @relation(fields: [publisherId], references: [id])
+  publisherId String    @db.VarChar(255)
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  children    Comment[] @relation("Comment_Children")
+  parent      Comment?  @relation("Comment_Children", fields: [parent_id], references: [id])
+  parent_id   Int?
 }
 
 model Account {
@@ -52,6 +57,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Comments      Comment[]
 }
 
 model VerificationToken {
