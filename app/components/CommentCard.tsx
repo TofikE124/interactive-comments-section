@@ -85,69 +85,85 @@ const CommentCard = ({
     }
   }
 
+  function calculateVotes(): number {
+    let count = 0;
+    // later
+    return count;
+  }
+
   const isMine = user?.email === session?.user?.email;
   const isEditting = searchParams.get("edit") === comment.id.toString();
   const isReplying = searchParams.get("reply") === comment.id.toString();
   const isDeleting = searchParams.get("delete") === comment.id.toString();
 
+  const CommentHeader = (
+    <div className="comment-card__header">
+      <Image
+        className="comment-card__header__avatar"
+        src={user?.image || "https://i.stack.imgur.com/34AD2.jpg"}
+        height={32}
+        width={32}
+        alt="avatar"
+      />
+      <div className="comment-card__header__user">
+        <h2>{user?.name}</h2>
+        {isMine && <div className="comment-card__header__user__you">You</div>}
+      </div>
+      <p className="comment-card__header__date">
+        {moment(comment.createdAt).fromNow()}
+      </p>
+    </div>
+  );
+
+  const CommentActions =
+    isEditting || isReplying ? (
+      ""
+    ) : isMine ? (
+      <div className="comment-card__cta flex gap-6">
+        <button className="comment-card__cta__delete">
+          <Image src={deleteIcon} alt="reply icon" />
+          <p>Delete</p>
+        </button>
+        <button className="comment-card__cta__edit">
+          <Image src={editIcon} alt="reply icon" />
+          <p>Edit</p>
+        </button>
+      </div>
+    ) : (
+      <div className="comment-card__cta">
+        <button className="comment-card__cta__reply">
+          <Image src={replyIcon} alt="reply icon" />
+          <p>Reply</p>
+        </button>
+      </div>
+    );
+
+  const CommentVotes = (
+    <div className="comment-card__vote">
+      <UpDownVote count={calculateVotes()} />
+    </div>
+  );
+
+  const CommentContent =
+    searchParams.get("edit") === comment.id.toString() ? (
+      <div className="comment-card__content">
+        <CommentInput
+          editId={comment.id.toString()}
+          textValue={comment.content}
+        />
+      </div>
+    ) : (
+      <p className="comment-card__content">{comment.content}</p>
+    );
+
   return (
     <>
       <div className="comment-card-container">
+        {CommentHeader}
         <div onClick={(e: any) => handleClick(e)} className="comment-card">
-          <div className="comment-card__header">
-            <Image
-              className="comment-card__header__avatar"
-              src={user?.image || "https://i.stack.imgur.com/34AD2.jpg"}
-              height={32}
-              width={32}
-              alt="avatar"
-            />
-            <div className="comment-card__header__user">
-              <h2>{user?.name}</h2>
-              {isMine && (
-                <div className="comment-card__header__user__you">You</div>
-              )}
-            </div>
-            <p className="comment-card__header__date">
-              {moment(comment.createdAt).fromNow()}
-            </p>
-          </div>
-
-          {searchParams.get("edit") === comment.id.toString() ? (
-            <div className="comment-card__content">
-              <CommentInput
-                editId={comment.id.toString()}
-                textValue={comment.content}
-              />
-            </div>
-          ) : (
-            <p className="comment-card__content">{comment.content}</p>
-          )}
-
-          <div className="comment-card__vote">
-            <UpDownVote count={10} />
-          </div>
-          {isEditting || isReplying ? (
-            ""
-          ) : isMine ? (
-            <div className="comment-card__cta flex gap-6">
-              <button className="comment-card__cta__delete">
-                <Image src={deleteIcon} alt="reply icon" />
-                <p>Delete</p>
-              </button>
-              <button className="comment-card__cta__edit">
-                <Image src={editIcon} alt="reply icon" />
-                <p>Edit</p>
-              </button>
-            </div>
-          ) : (
-            <div className="comment-card__cta">
-              <button className="comment-card__cta__reply">
-                <Image src={replyIcon} alt="reply icon" />
-                <p>Reply</p>
-              </button>
-            </div>
-          )}
+          {CommentContent}
+          {CommentVotes}
+          {CommentActions}
         </div>
         <div>
           {searchParams.get("replyId") === comment.id.toString() && (
