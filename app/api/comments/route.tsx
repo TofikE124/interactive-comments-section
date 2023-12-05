@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/prisma/client";
 import { commentSchema } from "../validationSchema";
 import { getServerSession } from "next-auth";
-import { Comment, User } from "@prisma/client";
+import { Comment, User, Vote } from "@prisma/client";
 
 export async function GET(request: NextResponse) {
   const comments = await prisma?.comment.findMany();
@@ -34,7 +34,10 @@ export async function POST(request: NextResponse) {
   return NextResponse.json(newComment);
 }
 
-export type CommentWithPublisher = { publisher: User } & Comment;
-export type CommentWithReplies = { Children: Comment[] } & Comment;
+export type CommentWithPublisher = { publisher: User; votes: Vote[] } & Comment;
+export type CommentWithReplies = {
+  Children: Comment[];
+  votes: Vote[];
+} & Comment;
 export type CommentWithPublisherAndReplies = CommentWithReplies &
   CommentWithPublisher;

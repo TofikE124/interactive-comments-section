@@ -19,7 +19,7 @@ async function getCommentNode(
   if (commentsId?.length) {
     let commentsParent = await prisma.comment.findUnique({
       where: { id: Number(commentsId[0]) },
-      include: { publisher: true },
+      include: { publisher: true, votes: true },
     });
 
     commentNode = new TreeNode(
@@ -31,7 +31,7 @@ async function getCommentNode(
     for (let i = 0; i < commentsId?.length; i++) {
       const comments = await prisma.comment.findMany({
         where: { parent_id: Number(commentsId[i]) },
-        include: { publisher: true },
+        include: { publisher: true,votes:true },
         orderBy: { createdAt: "desc" },
       });
       let nextParent: TreeNode<CommentWithPublisher> | null = null;
@@ -59,7 +59,7 @@ const CommentsSection = async ({ commentsId }: Props) => {
   const comments = await prisma.comment.findMany({
     where: { parent_id: null },
     orderBy: { createdAt: "asc" },
-    include: { publisher: true },
+    include: { publisher: true, votes: true },
   });
   const commentNode = await getCommentNode(commentsId);
 

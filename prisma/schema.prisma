@@ -20,7 +20,7 @@ model Comment {
   children    Comment[] @relation("Comment_Children")
   parent      Comment?  @relation("Comment_Children", fields: [parent_id], references: [id])
   parent_id   Int?
-  Vote        Vote[]
+  votes       Vote[]
 }
 
 model Account {
@@ -60,7 +60,7 @@ model User {
   sessions      Session[]
   Comments      Comment[]
   commentId     Int?
-  Votes         Vote[]
+  votes         Vote[]
 }
 
 model Vote {
