@@ -8,7 +8,11 @@ export const commentSchema = z.object({
 
 const VoteTypeArr = Object.values(VoteType);
 
-export const voteSchema = z.object({
+export const createVoteSchema = z.object({
   commentId: z.number().min(1),
+  voteType: z.enum([VoteTypeArr[0], ...VoteTypeArr.slice(1)]),
+});
+
+export const updateVoteSchema = z.object({
   voteType: z.enum([VoteTypeArr[0], ...VoteTypeArr.slice(1)]),
 });

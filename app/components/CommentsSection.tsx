@@ -6,6 +6,9 @@ import CommentNode from "./CommentNode";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import ScrollToBottom from "./ScrollToBottom";
+import { getServerSession } from "next-auth";
+import { userAgent } from "next/server";
+import { User } from "@prisma/client";
 
 interface Props {
   commentsId: string[];
@@ -31,7 +34,7 @@ async function getCommentNode(
     for (let i = 0; i < commentsId?.length; i++) {
       const comments = await prisma.comment.findMany({
         where: { parent_id: Number(commentsId[i]) },
-        include: { publisher: true,votes:true },
+        include: { publisher: true, votes: true },
         orderBy: { createdAt: "desc" },
       });
       let nextParent: TreeNode<CommentWithPublisher> | null = null;
@@ -75,6 +78,14 @@ const CommentsSection = async ({ commentsId }: Props) => {
     );
   }
 
+  const session = await getServerSession();
+  let user: User | null = null;
+  if (session) {
+    user = await prisma.user.findUnique({
+      where: { email: session?.user?.email! },
+    });
+  }
+
   return (
     <div className="comments-container ">
       {comments.map((comment) => {
@@ -82,6 +93,7 @@ const CommentsSection = async ({ commentsId }: Props) => {
           <CommentCard
             key={comment.id}
             comment={comment}
+            currentUserId={user?.id!}
             path={comment.id.toString()}
           />
         );

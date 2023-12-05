@@ -17,13 +17,18 @@ import { CommentWithPublisher } from "../api/comments/route";
 import CommentInput from "./CommentInput";
 import DeleteComment from "./DeleteComment";
 import UpDownVote from "./UpDownVote";
+import axios from "axios";
+import { Vote, VoteType } from "@prisma/client";
+import toast from "react-hot-toast";
 
 const CommentCard = ({
   comment,
+  currentUserId,
   path,
   parentPath,
 }: {
   comment: CommentWithPublisher;
+  currentUserId?: string;
   path?: string;
   parentPath?: string;
 }) => {
@@ -52,7 +57,6 @@ const CommentCard = ({
     );
     return count;
   }
-
   const isMine = user?.email === session?.user?.email;
   const isEditting = searchParams.get("edit") === comment.id.toString();
   const isReplying = searchParams.get("reply") === comment.id.toString();
@@ -100,12 +104,16 @@ const CommentCard = ({
       </div>
     );
 
+  const defaultVote = comment.votes.filter(
+    (vote) => vote.userId === currentUserId
+  )?.[0];
   const CommentVotes = (
     <div className="comment-card__vote">
       <UpDownVote
         handleUpClick={handleUpVote}
         handleDownClick={handleDownVote}
         count={calculateVotes()}
+        defaultValue={defaultVote?.type || null}
       />
     </div>
   );
@@ -163,7 +171,7 @@ const CommentCard = ({
       target.parentElement?.className === deleteClass
     ) {
       // Save scroll in LocalStorage
-      localStorage.setItem("persistentScroll", window.scrollY.toString());
+      saveScroll();
       const params = new URLSearchParams(searchParams);
       router.push(`?delete=${comment.id.toString()}`);
     } else if (
@@ -187,10 +195,71 @@ const CommentCard = ({
   }
 
   function handleUpVote() {
-    
+    if (!defaultVote) {
+      axios
+        .post("/api/votes", {
+          commentId: comment.id,
+          voteType: VoteType.UPVOTE,
+        })
+        .then((res) => {
+          saveScroll();
+          router.refresh();
+        })
+        .catch((error) => {
+          toast.error("Coludn't upvote");
+        });
+    } else {
+      if (defaultVote.type === "UPVOTE") {
+        axios.delete(`/api/votes/${defaultVote.id}`);
+      } else
+        axios
+          .patch(`/api/votes/${defaultVote.id}`, {
+            voteType: VoteType.UPVOTE,
+          })
+          .then((res) => {
+            saveScroll();
+            router.refresh();
+          })
+          .catch((error) => {
+            toast.error("Coludn't upvote");
+          });
+    }
   }
 
-  function handleDownVote() {}
+  function handleDownVote() {
+    if (!defaultVote) {
+      axios
+        .post("/api/votes", {
+          commentId: comment.id,
+          voteType: VoteType.DOWNVOTE,
+        })
+        .then((res) => {
+          saveScroll();
+          router.refresh();
+        })
+        .catch((error) => {
+          toast.error("Coludn't downvote");
+        });
+    } else {
+      if (defaultVote.type === "DOWNVOTE") {
+        axios.delete(`/api/votes/${defaultVote.id}`);
+      } else
+        axios
+          .patch(`/api/votes/${defaultVote.id}`, {
+            voteType: VoteType.DOWNVOTE,
+          })
+          .then((res) => {
+            saveScroll();
+            router.refresh();
+          })
+          .catch((error) => {
+            toast.error("Coludn't downvote");
+          });
+    }
+  }
+  function saveScroll() {
+    localStorage.setItem("persistentScroll", window.scrollY.toString());
+  }
 };
 
 export default CommentCard;

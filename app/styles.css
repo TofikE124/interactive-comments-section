@@ -244,12 +244,16 @@
 }
 
 .updown-vote > button:hover {
-  color: var(--Moderate-Blue, #5357b6);
+  color: var(--Moderate-Blue);
 }
 
 .updown-vote > button:active,
 .updown-vote > button:focus {
   outline: 0;
+}
+
+.vote-marked {
+  color: var(--Moderate-Blue) !important;
 }
 
 .updown-vote > p {

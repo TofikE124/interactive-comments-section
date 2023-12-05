@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { voteSchema } from "../validationSchema";
+import { createVoteSchema, updateVoteSchema } from "../validationSchema";
 import { getServerSession } from "next-auth";
+import { VoteType } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const session = await getServerSession();
 
-  const validation = voteSchema.safeParse(body);
+  const validation = createVoteSchema.safeParse(body);
   if (!validation.success)
     return NextResponse.json(validation.error.errors, { status: 400 });
 
@@ -25,8 +26,14 @@ export async function POST(request: NextRequest) {
   });
 
   const vote = await prisma?.vote.create({
-    data: { type: body.voteType, commentId: comment.id, userId: user?.id! },
+    data: {
+      type: body.voteType,
+      commentId: comment.id,
+      userId: user?.id!,
+    },
   });
 
   return NextResponse.json(vote);
 }
+
+
