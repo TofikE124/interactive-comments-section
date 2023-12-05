@@ -17,6 +17,7 @@ const DeleteComment = ({
   const searchParams = useSearchParams();
   const isDeleting = searchParams.get("delete") === commentId;
   const cancel = () => {
+    localStorage.setItem("persistentScroll", window.scrollY.toString());
     const params = new URLSearchParams(searchParams);
     params.delete("delete");
     router.replace(pathname, { query: params.toString() });
