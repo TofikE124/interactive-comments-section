@@ -3,9 +3,9 @@ import CommentCard from "./CommentCard";
 import { CommentWithPublisher } from "../api/comments/route";
 import { TreeNode } from "@/prisma/tree";
 import CommentNode from "./CommentNode";
-import Image from "next/image";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import ScrollToBottom from "./ScrollToBottom";
 
 interface Props {
   commentsId: string[];
@@ -58,10 +58,11 @@ async function getCommentNode(
 const CommentsSection = async ({ commentsId }: Props) => {
   const comments = await prisma.comment.findMany({
     where: { parent_id: null },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
     include: { publisher: true },
   });
   const commentNode = await getCommentNode(commentsId);
+
   if (commentNode && commentsId) {
     return (
       <div className="comments-container">
@@ -69,9 +70,11 @@ const CommentsSection = async ({ commentsId }: Props) => {
           <ArrowLeftIcon />
         </Link>
         <CommentNode commentNode={[commentNode]} />
+        <ScrollToBottom />
       </div>
     );
   }
+
   return (
     <div className="comments-container ">
       {comments.map((comment) => {
@@ -83,6 +86,7 @@ const CommentsSection = async ({ commentsId }: Props) => {
           />
         );
       })}
+      <ScrollToBottom />
     </div>
   );
 };

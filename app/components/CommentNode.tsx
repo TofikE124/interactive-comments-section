@@ -28,7 +28,11 @@ const CommentNode = ({
     return commentNode.map((commentBlob) => {
       return (
         <>
-          <CommentCard comment={commentBlob.value} path={commentBlob.path} />
+          <CommentCard
+            comment={commentBlob.value}
+            path={commentBlob.path}
+            parentPath={commentBlob.parent?.path}
+          />
           {commentBlob.children[0] ? (
             <div className="comment-children">
               <CommentNode commentNode={commentBlob.children} />

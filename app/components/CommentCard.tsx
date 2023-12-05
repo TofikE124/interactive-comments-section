@@ -2,24 +2,30 @@
 import moment from "moment";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useEffect } from "react";
 import deleteIcon from "../../public/images/icons/icon-delete.svg";
 import editIcon from "../../public/images/icons/icon-edit.svg";
 import replyIcon from "../../public/images/icons/icon-reply.svg";
 
-import { Button, Dialog, Flex, Text, TextField } from "@radix-ui/themes";
 import { CommentWithPublisher } from "../api/comments/route";
 import CommentInput from "./CommentInput";
-import UpDownVote from "./UpDownVote";
 import DeleteComment from "./DeleteComment";
+import UpDownVote from "./UpDownVote";
 
 const CommentCard = ({
   comment,
   path,
+  parentPath,
 }: {
   comment: CommentWithPublisher;
   path?: string;
+  parentPath?: string;
 }) => {
   const params: { commentsId: string[] } = useParams();
   const searchParams = useSearchParams();
@@ -35,6 +41,7 @@ const CommentCard = ({
   }, [params]);
 
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const user = comment.publisher;
 
@@ -56,7 +63,8 @@ const CommentCard = ({
       target.className === deleteClass ||
       target.parentElement?.className === deleteClass
     ) {
-      router.push(`/comments/${path}?delete=${comment.id}`);
+      const params = new URLSearchParams(searchParams);
+      router.push(`?delete=${comment.id.toString()}`);
     } else if (
       target.className === replyClass ||
       target.parentElement?.className === replyClass

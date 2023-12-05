@@ -24,14 +24,15 @@ export async function PATCH(request: NextRequest, { params: { id } }: Props) {
   if (!validation.success)
     return NextResponse.json(validation.error.errors, { status: 400 });
 
-  if (!session) return NextResponse.json("You can't do that", { status: 401 });
-
   const comment = await prisma.comment.findUnique({
     where: { id: parseInt(id) },
+    include: { publisher: true },
   });
   if (!comment)
     return NextResponse.json({ message: "Comment not found" }, { status: 404 });
 
+  if (session?.user?.email !== comment.publisher.email)
+    return NextResponse.json("You can't do that", { status: 401 });
   const newComment = await prisma.comment.update({
     where: { id: parseInt(id) },
     data: { content: body.content },
@@ -43,13 +44,14 @@ export async function PATCH(request: NextRequest, { params: { id } }: Props) {
 export async function DELETE(request: NextRequest, { params: { id } }: Props) {
   const session = await getServerSession();
 
-  if (!session) return NextResponse.json("You can't do that", { status: 401 });
-
   const comment = await prisma.comment.findUnique({
     where: { id: parseInt(id) },
+    include: { publisher: true },
   });
   if (!comment)
     return NextResponse.json({ message: "Comment not found" }, { status: 404 });
+  if (session?.user?.email !== comment.publisher.email)
+    return NextResponse.json("You can't do that", { status: 401 });
 
   await prisma.comment.delete({ where: { id: parseInt(id) } });
   await prisma.comment.deleteMany({ where: { parent_id: parseInt(id) } });

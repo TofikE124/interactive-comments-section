@@ -1,15 +1,21 @@
 "use client";
-import { Dialog, Flex, TextField, Button, Text } from "@radix-ui/themes";
+import { Button, Dialog, Flex } from "@radix-ui/themes";
+import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import toast from "react-hot-toast";
 
-const DeleteComment = ({ commentId }: { commentId: string }) => {
+const DeleteComment = ({
+  commentId,
+  parentPath,
+}: {
+  commentId: string;
+  parentPath?: string;
+}) => {
   const router = useRouter();
   const pathname = usePathname();
 
   const searchParams = useSearchParams();
   const isDeleting = searchParams.get("delete") === commentId;
-
   const cancel = () => {
     const params = new URLSearchParams(searchParams);
     params.delete("delete");
@@ -17,7 +23,16 @@ const DeleteComment = ({ commentId }: { commentId: string }) => {
   };
 
   const deleteComment = () => {
-    
+    axios
+      .delete(`/api/comments/${commentId}`)
+      .then((res) => {
+        router.refresh();
+      })
+      .catch((error) => {
+        toast.error("Couldn't send comment");
+      });
+    if (!parentPath) router.push("/comments");
+    else router.push(`/comments/${parentPath}`);
   };
   return (
     <Dialog.Root open={isDeleting}>
