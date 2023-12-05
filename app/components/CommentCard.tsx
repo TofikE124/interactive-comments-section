@@ -45,49 +45,11 @@ const CommentCard = ({
   const { data: session } = useSession();
   const user = comment.publisher;
 
-  function handleClick(e: MouseEvent) {
-    const target = e.target as HTMLElement;
-
-    const textContainerClass = "textarea-container";
-    const deleteClass = "comment-card__cta__delete";
-    const replyClass = "comment-card__cta__reply";
-    const editClass = "comment-card__cta__edit";
-
-    // Textarea
-    if (target.parentElement?.className === textContainerClass) return;
-
-    localStorage.setItem("persistentScroll", window.scrollY.toString());
-
-    // Delete
-    if (
-      target.className === deleteClass ||
-      target.parentElement?.className === deleteClass
-    ) {
-      const params = new URLSearchParams(searchParams);
-      router.push(`?delete=${comment.id.toString()}`);
-    } else if (
-      target.className === replyClass ||
-      target.parentElement?.className === replyClass
-    ) {
-      // Reply?
-      session?.user
-        ? router.push(`/comments/${path}?replyId=${comment.id.toString()}`)
-        : signIn("google");
-    }
-    // Edit
-    else if (
-      target.className === editClass ||
-      target.parentElement?.className === editClass
-    ) {
-      router.push(`/comments/${path}?edit=${comment.id}`);
-    } else {
-      router.push(`/comments/${path}`);
-    }
-  }
-
   function calculateVotes(): number {
     let count = 0;
-    // later
+    comment.votes.forEach((vote) =>
+      vote.type === "UPVOTE" ? count++ : count--
+    );
     return count;
   }
 
@@ -140,7 +102,11 @@ const CommentCard = ({
 
   const CommentVotes = (
     <div className="comment-card__vote">
-      <UpDownVote count={calculateVotes()} />
+      <UpDownVote
+        handleUpClick={handleUpVote}
+        handleDownClick={handleDownVote}
+        count={calculateVotes()}
+      />
     </div>
   );
 
@@ -159,8 +125,8 @@ const CommentCard = ({
   return (
     <>
       <div className="comment-card-container">
-        {CommentHeader}
-        <div onClick={(e: any) => handleClick(e)} className="comment-card">
+        <div onClick={(e: any) => handleDivClick(e)} className="comment-card">
+          {CommentHeader}
           {CommentContent}
           {CommentVotes}
           {CommentActions}
@@ -174,6 +140,57 @@ const CommentCard = ({
       <DeleteComment commentId={comment.id.toString()} />
     </>
   );
+
+  function handleDivClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+
+    const textContainerClass = "textarea-container";
+    const deleteClass = "comment-card__cta__delete";
+    const replyClass = "comment-card__cta__reply";
+    const editClass = "comment-card__cta__edit";
+    const updownVoteClass = "updown-vote";
+
+    // Textarea or updown vote
+    if (
+      target.parentElement?.className === textContainerClass ||
+      target?.parentElement?.className === updownVoteClass ||
+      target.className === updownVoteClass
+    )
+      return;
+    // Delete
+    else if (
+      target.className === deleteClass ||
+      target.parentElement?.className === deleteClass
+    ) {
+      // Save scroll in LocalStorage
+      localStorage.setItem("persistentScroll", window.scrollY.toString());
+      const params = new URLSearchParams(searchParams);
+      router.push(`?delete=${comment.id.toString()}`);
+    } else if (
+      target.className === replyClass ||
+      target.parentElement?.className === replyClass
+    ) {
+      // Reply?
+      session?.user
+        ? router.push(`/comments/${path}?replyId=${comment.id.toString()}`)
+        : signIn("google");
+    }
+    // Edit
+    else if (
+      target.className === editClass ||
+      target.parentElement?.className === editClass
+    ) {
+      router.push(`/comments/${path}?edit=${comment.id}`);
+    } else {
+      router.push(`/comments/${path}`);
+    }
+  }
+
+  function handleUpVote() {
+    
+  }
+
+  function handleDownVote() {}
 };
 
 export default CommentCard;
