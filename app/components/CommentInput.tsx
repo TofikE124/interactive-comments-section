@@ -4,7 +4,7 @@ import { Text } from "@radix-ui/themes";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FieldValues, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
@@ -35,8 +35,10 @@ const CommentInput = ({
 
   const { ref, ...rest } = register("content");
 
+  const searchParams = useSearchParams();
   const { data } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: session, status } = useSession();
   if (status === "loading")
@@ -46,6 +48,16 @@ const CommentInput = ({
       </div>
     );
   if (!session?.user) return null;
+
+  const cancel = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("edit");
+    params.delete("reply");
+    router.replace(pathname, { query: params.toString() });
+  };
+
+  const isEditting = searchParams.get("edit");
+  const isReplying = searchParams.get("reply");
 
   return (
     <form
@@ -62,16 +74,26 @@ const CommentInput = ({
         />
         <Text color="red">{errors.content?.message}</Text>
       </div>
-      <Image
-        src={data?.user?.image || "https://i.stack.imgur.com/34AD2.jpg"}
-        alt="profile picture"
-        width={32}
-        height={32}
-        className="rounded-full"
-      />
-      <button className="uppercase">
-        {parentId ? "Reply" : editId ? "Edit" : "Send"}
-      </button>
+      {!isEditting && (
+        <Image
+          src={data?.user?.image || "https://i.stack.imgur.com/34AD2.jpg"}
+          alt="profile picture"
+          width={32}
+          height={32}
+          className="rounded-full"
+        />
+      )}
+
+      <div className="comment-input__btns">
+        {(isReplying || isEditting) && (
+          <button onClick={() => cancel()} className="uppercase cancel-btn">
+            Cancel
+          </button>
+        )}
+        <button className="uppercase">
+          {parentId ? "Reply" : editId ? "Edit" : "Send"}
+        </button>
+      </div>
     </form>
   );
 

@@ -146,12 +146,12 @@
   align-items: center;
 }
 
-.comment-input > button {
-  transition: background-color 200ms;
+.comment-input__btns > button {
+  transition: opacity 200ms;
 }
 
-.comment-input > button:hover {
-  background: var(--Light-Grayish-Blue, #c5c6ef);
+.comment-input__btns > button:hover {
+  opacity: 0.6;
 }
 
 .comment-card-container .comment-input:not(.comment-input__edit) {
@@ -171,7 +171,7 @@
 }
 
 .comment-input.comment-input__edit textarea {
-  padding: 0;
+  padding: 0.5rem;
   min-height: 200px;
   max-height: 500px;
   resize: vertical;
@@ -194,14 +194,26 @@
   outline: none;
 }
 
-.comment-input > button {
+.comment-input__btns {
+  display: flex;
+  justify-content: end;
+  gap: 1rem;
+  width: 100%;
+  grid-area: btn;
+}
+
+.comment-input__btns > button {
   grid-area: btn;
   width: fit-content;
   border-radius: 8px;
   justify-self: end;
   padding: 0.75rem 2rem;
-  background-color: var(--Moderate-Blue);
   color: white;
+  background-color: var(--Moderate-Blue);
+}
+
+.comment-input__btns > .cancel-btn {
+  background-color: var(--Soft-Red);
 }
 
 .comment-input > img {
