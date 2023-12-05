@@ -9,6 +9,7 @@
   --Light-Grayish-Blue: #c5c6ef;
   --Moderate-Blue: #5357b6;
   --Dark-Blue: #334253;
+  --Soft-Red: #ed6368;
 }
 
 /*====================
@@ -78,7 +79,7 @@ body {
 }
 
 main {
-  max-width: 730px;
+  max-width: 1000px;
   width: 100%;
   font-family: "Rubik", sans-serif;
   font-weight: 400;

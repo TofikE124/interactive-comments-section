@@ -1,10 +1,13 @@
 "use client";
 import moment from "moment";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, MouseEventHandler, useEffect, useState } from "react";
 import replyIcon from "../../public/images/icons/icon-reply.svg";
+import deleteIcon from "../../public/images/icons/icon-delete.svg";
+import editIcon from "../../public/images/icons/icon-edit.svg";
+
 import { CommentWithPublisher } from "../api/comments/route";
 import CommentInput from "./CommentInput";
 import UpDownVote from "./UpDownVote";
@@ -35,13 +38,35 @@ const CommentCard = ({
   const user = comment.publisher;
 
   function handleClick(e: MouseEvent) {
-    localStorage.setItem("persistentScroll", window.scrollY.toString());
     const target = e.target as HTMLElement;
-    target.className === "comment-card__reply" ||
-    target.parentElement?.className === "comment-card__reply"
-      ? router.push(`/comments/${path}?reply=${comment.id}`)
-      : comment.id.toString() && router.push(`/comments/${path}`);
+
+    // Textarea
+    if (target.parentElement?.className === "textarea-container") return;
+
+    localStorage.setItem("persistentScroll", window.scrollY.toString());
+
+    // Reply?
+    if (
+      target.className === "comment-card__cta__reply" ||
+      target.parentElement?.className === "comment-card__cta__reply"
+    ) {
+      session?.user
+        ? router.push(`/comments/${path}?replyId=${comment.id.toString()}`)
+        : signIn("google");
+    }
+
+    // Edit
+    if (
+      target.className === "comment-card__cta__edit" ||
+      target.parentElement?.className === "comment-card__cta__edit"
+    ) {
+      router.push(`/comments/${path}?edit=${comment.id}`);
+    } else {
+      router.push(`/comments/${path}`);
+    }
   }
+
+  const isMine = user?.email === session?.user?.email;
 
   return (
     <div className="comment-card-container">
@@ -56,7 +81,7 @@ const CommentCard = ({
           />
           <div className="comment-card__header__user">
             <h2>{user?.name}</h2>
-            {user?.email === session?.user?.email && (
+            {isMine && (
               <div className="comment-card__header__user__you">You</div>
             )}
           </div>
@@ -65,17 +90,42 @@ const CommentCard = ({
           </p>
         </div>
 
-        <p className="comment-card__content">{comment.content}</p>
+        {searchParams.get("edit") === comment.id.toString() ? (
+          <div className="comment-card__content">
+            <CommentInput
+              editId={comment.id.toString()}
+              textValue={comment.content}
+            />
+          </div>
+        ) : (
+          <p className="comment-card__content">{comment.content}</p>
+        )}
+
         <div className="comment-card__vote">
           <UpDownVote count={10} />
         </div>
-        <button className="comment-card__reply">
-          <Image src={replyIcon} alt="reply icon" />
-          <p>Reply</p>
-        </button>
+        {isMine ? (
+          <div className="comment-card__cta flex gap-6">
+            <button className="comment-card__cta__delete">
+              <Image src={deleteIcon} alt="reply icon" />
+              <p>Delete</p>
+            </button>
+            <button className="comment-card__cta__edit">
+              <Image src={editIcon} alt="reply icon" />
+              <p>Edit</p>
+            </button>
+          </div>
+        ) : (
+          <div className="comment-card__cta">
+            <button className="comment-card__cta__reply">
+              <Image src={replyIcon} alt="reply icon" />
+              <p>Reply</p>
+            </button>
+          </div>
+        )}
       </div>
       <div>
-        {searchParams.get("reply") === comment.id.toString() && (
+        {searchParams.get("replyId") === comment.id.toString() && (
           <CommentInput parentId={comment.id.toString()} />
         )}
       </div>
