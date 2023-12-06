@@ -102,7 +102,7 @@ const CommentInput = ({
       axios
         .post("/api/comments", {
           content: data.content,
-          parentId: parentId ? parentId : undefined,
+          parentId: parentId || undefined,
         })
         .then((res) => {
           setValue("content", "");
@@ -110,7 +110,7 @@ const CommentInput = ({
           router.refresh();
         })
         .catch((error) => {
-          toast.error("Couldn't send comment");
+          console.log(error);
         });
     }
     if (editId) {
