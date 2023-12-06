@@ -5,10 +5,12 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import { z } from "zod";
+import Spinner from "./Spinner";
 
 const schema = z.object({
   content: z.string().min(1, "This field is required"),
@@ -39,6 +41,7 @@ const CommentInput = ({
   const { data } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: session, status } = useSession();
   if (status === "loading")
@@ -91,7 +94,15 @@ const CommentInput = ({
           </button>
         )}
         <button className="uppercase">
-          {parentId ? "Reply" : editId ? "Edit" : "Send"}
+          {isLoading ? (
+            <Spinner />
+          ) : parentId ? (
+            "Reply"
+          ) : editId ? (
+            "Edit"
+          ) : (
+            "Send"
+          )}
         </button>
       </div>
     </form>
@@ -99,10 +110,11 @@ const CommentInput = ({
 
   function onSubmit(data: FieldValues) {
     if (!editId) {
+      setIsLoading(true);
       axios
         .post("/api/comments", {
           content: data.content,
-          parentId: parentId ? parentId : undefined,
+          parentId: parentId || undefined,
         })
         .then((res) => {
           setValue("content", "");
@@ -110,10 +122,12 @@ const CommentInput = ({
           router.refresh();
         })
         .catch((error) => {
-          toast.error("Couldn't send comment");
-        });
+          console.log(error);
+        })
+        .finally(() => setIsLoading(false));
     }
     if (editId) {
+      setIsLoading(true);
       axios
         .patch(`/api/comments/${editId}`, { content: data.content })
         .then((res) => {
@@ -122,7 +136,8 @@ const CommentInput = ({
         })
         .catch((error) => {
           toast.error("Couldn't send comment");
-        });
+        })
+        .finally(() => setIsLoading(false));
     }
   }
 };

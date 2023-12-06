@@ -8,7 +8,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import deleteIcon from "../../public/images/icons/icon-delete.svg";
 import editIcon from "../../public/images/icons/icon-edit.svg";
 import replyIcon from "../../public/images/icons/icon-reply.svg";
@@ -25,6 +25,7 @@ import axios from "axios";
 import { Vote, VoteType } from "@prisma/client";
 import toast from "react-hot-toast";
 import { Badge } from "@radix-ui/themes";
+import Spinner from "./Spinner";
 
 const CommentCard = ({
   comment,
@@ -33,7 +34,7 @@ const CommentCard = ({
   parentPath,
 }: {
   comment: CommentWithPublisherAndReplies;
-  currentUserId?: string;
+  currentUserId?: string | null;
   path?: string;
   parentPath?: string;
 }) => {
@@ -67,6 +68,8 @@ const CommentCard = ({
   const isEditting = searchParams.get("edit") === comment.id.toString();
   const isReplying = searchParams.get("reply") === comment.id.toString();
   const isDeleting = searchParams.get("delete") === comment.id.toString();
+
+  const [isVoting, setIsVoting] = useState(false);
 
   const CommentHeader = (
     <div className="comment-card__header">
@@ -115,7 +118,7 @@ const CommentCard = ({
     );
 
   const defaultVote = comment.votes.filter(
-    (vote) => vote.userId === currentUserId
+    (vote) => vote.userId.toString() === currentUserId
   )?.[0];
   const CommentVotes = (
     <div className="comment-card__vote">
@@ -124,6 +127,7 @@ const CommentCard = ({
         handleDownClick={handleDownVote}
         count={calculateVotes()}
         defaultValue={defaultVote?.type || null}
+        isVoting={isVoting}
       />
     </div>
   );
@@ -215,6 +219,8 @@ const CommentCard = ({
       signIn("google");
       return;
     }
+    saveScroll();
+    setIsVoting(true);
     if (!defaultVote) {
       axios
         .post("/api/votes", {
@@ -222,22 +228,26 @@ const CommentCard = ({
           voteType: VoteType.UPVOTE,
         })
         .then((res) => {
-          saveScroll();
           router.refresh();
         })
         .catch((error) => {
           toast.error("Coludn't upvote");
+        })
+        .finally(() => {
+          setIsVoting(false);
         });
     } else {
       if (defaultVote.type === "UPVOTE") {
         axios
           .delete(`/api/votes/${defaultVote.id}`)
           .then((res) => {
-            saveScroll();
             router.refresh();
           })
           .catch((error) => {
             toast.error("Coludn't upvote");
+          })
+          .finally(() => {
+            setIsVoting(false);
           });
       } else
         axios
@@ -245,11 +255,13 @@ const CommentCard = ({
             voteType: VoteType.UPVOTE,
           })
           .then((res) => {
-            saveScroll();
             router.refresh();
           })
           .catch((error) => {
             toast.error("Coludn't upvote");
+          })
+          .finally(() => {
+            setIsVoting(false);
           });
     }
   }
@@ -259,6 +271,8 @@ const CommentCard = ({
       signIn("google");
       return;
     }
+    setIsVoting(true);
+    saveScroll();
     if (!defaultVote) {
       axios
         .post("/api/votes", {
@@ -266,22 +280,26 @@ const CommentCard = ({
           voteType: VoteType.DOWNVOTE,
         })
         .then((res) => {
-          saveScroll();
           router.refresh();
         })
         .catch((error) => {
           toast.error("Coludn't downvote");
+        })
+        .finally(() => {
+          setIsVoting(false);
         });
     } else {
       if (defaultVote.type === "DOWNVOTE") {
         axios
           .delete(`/api/votes/${defaultVote.id}`)
           .then((res) => {
-            saveScroll();
             router.refresh();
           })
           .catch((error) => {
             toast.error("Coludn't downvote");
+          })
+          .finally(() => {
+            setIsVoting(false);
           });
       } else
         axios
@@ -289,11 +307,13 @@ const CommentCard = ({
             voteType: VoteType.DOWNVOTE,
           })
           .then((res) => {
-            saveScroll();
             router.refresh();
           })
           .catch((error) => {
             toast.error("Coludn't downvote");
+          })
+          .finally(() => {
+            setIsVoting(false);
           });
     }
   }

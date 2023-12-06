@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createVoteSchema, updateVoteSchema } from "../validationSchema";
 import { getServerSession } from "next-auth";
+import prisma from "@/prisma/client";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();

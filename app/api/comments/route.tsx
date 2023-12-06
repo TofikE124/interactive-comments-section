@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
 import { commentSchema } from "../validationSchema";
 import { getServerSession } from "next-auth";
 import { Comment, User, Vote } from "@prisma/client";
 
-export async function GET(request: NextResponse) {
+export async function GET(request: NextRequest) {
   const comments = await prisma?.comment.findMany();
   return NextResponse.json(comments);
 }
 
-export async function POST(request: NextResponse) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession();
   const body = await request.json();
   const validation = commentSchema.safeParse(body);

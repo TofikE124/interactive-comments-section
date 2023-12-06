@@ -22,11 +22,14 @@ async function getCommentNode(
 ): Promise<TreeNode<CommentWithPublisherAndReplies> | null> {
   let commentNode: TreeNode<CommentWithPublisherAndReplies> | null = null;
 
+  if (Array.isArray(commentsId) && commentsId[0].length > 8) return null;
+
   if (commentsId?.length) {
     let commentsParent = await prisma.comment.findUnique({
       where: { id: Number(commentsId[0]) },
       include: { publisher: true, votes: true, children: true },
     });
+    if (!commentsParent) return null;
 
     commentNode = new TreeNode<CommentWithPublisherAndReplies>(
       null,
@@ -43,7 +46,7 @@ async function getCommentNode(
       });
       let nextParent: TreeNode<CommentWithPublisherAndReplies> | null = null;
 
-      comments.map((comment) => {
+      comments?.map((comment) => {
         const child = new TreeNode(
           currentParent,
           comment,
@@ -92,17 +95,17 @@ const CommentsSection = async ({ commentsId }: Props) => {
 
   return (
     <div className="comments-container ">
-      {comments.map((comment) => {
+      {comments?.map((comment) => {
         return (
           <CommentCard
             key={comment.id}
             comment={comment}
-            currentUserId={user?.id!}
+            currentUserId={user?.id.toString() || null}
             path={comment.id.toString()}
           />
         );
       })}
-      <ScrollToBottom />
+      <ScrollToBottom comments={comments} />
     </div>
   );
 };
