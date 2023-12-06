@@ -54,7 +54,7 @@ export async function DELETE(request: NextRequest, { params: { id } }: Props) {
     return NextResponse.json("You can't do that", { status: 401 });
 
   await prisma.comment.delete({ where: { id: parseInt(id) } });
-  await prisma.comment.deleteMany({ where: { parent_id: parseInt(id) } });
+
   return NextResponse.json(
     { message: `Comment with id of ${id} was deleted` },
     { status: 200 }

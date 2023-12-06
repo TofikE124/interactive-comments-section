@@ -62,7 +62,7 @@ const CommentsSection = async ({ commentsId }: Props) => {
   const comments = await prisma.comment.findMany({
     where: { parent_id: null },
     orderBy: { createdAt: "asc" },
-    include: { publisher: true, votes: true },
+    include: { votes: true, publisher: true },
   });
   const commentNode = await getCommentNode(commentsId);
 

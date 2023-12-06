@@ -12,13 +12,13 @@ datasource db {
 
 model Comment {
   id          Int       @id @default(autoincrement())
-  publisher   User      @relation(fields: [publisherId], references: [id])
+  publisher   User      @relation(fields: [publisherId], references: [id], onDelete: Cascade)
   publisherId String    @db.VarChar(255)
   content     String    @db.Text
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   children    Comment[] @relation("Comment_Children")
-  parent      Comment?  @relation("Comment_Children", fields: [parent_id], references: [id])
+  parent      Comment?  @relation("Comment_Children", fields: [parent_id], references: [id], onDelete: Cascade)
   parent_id   Int?
   votes       Vote[]
 }
@@ -37,7 +37,7 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
 }
@@ -47,7 +47,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model User {
@@ -59,7 +59,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   Comments      Comment[]
-  commentId     Int?
   votes         Vote[]
 }
 
@@ -68,7 +67,7 @@ model Vote {
   type      VoteType // "upvote" or "downvote"
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  comment   Comment  @relation(fields: [commentId], references: [id])
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId Int
 
   @@unique([userId, commentId]) // Ensures a user can vote only once on a comment

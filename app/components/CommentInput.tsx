@@ -106,6 +106,7 @@ const CommentInput = ({
         })
         .then((res) => {
           setValue("content", "");
+          router.push(pathname, { query: null });
           router.refresh();
         })
         .catch((error) => {

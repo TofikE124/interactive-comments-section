@@ -27,13 +27,13 @@ const DeleteComment = ({
     axios
       .delete(`/api/comments/${commentId}`)
       .then((res) => {
+        if (!parentPath) router.push("/comments");
+        else router.push(`/comments/${parentPath}`);
         router.refresh();
       })
       .catch((error) => {
-        toast.error("Couldn't send comment");
+        toast.error("Couldn't delete comment");
       });
-    if (!parentPath) router.push("/comments");
-    else router.push(`/comments/${parentPath}`);
   };
   return (
     <Dialog.Root open={isDeleting}>

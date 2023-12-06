@@ -145,7 +145,10 @@ const CommentCard = ({
           )}
         </div>
       </div>
-      <DeleteComment commentId={comment.id.toString()} />
+      <DeleteComment
+        commentId={comment.id.toString()}
+        parentPath={parentPath}
+      />
     </>
   );
 
@@ -195,6 +198,10 @@ const CommentCard = ({
   }
 
   function handleUpVote() {
+    if (!session?.user) {
+      signIn("google");
+      return;
+    }
     if (!defaultVote) {
       axios
         .post("/api/votes", {
@@ -210,7 +217,15 @@ const CommentCard = ({
         });
     } else {
       if (defaultVote.type === "UPVOTE") {
-        axios.delete(`/api/votes/${defaultVote.id}`);
+        axios
+          .delete(`/api/votes/${defaultVote.id}`)
+          .then((res) => {
+            saveScroll();
+            router.refresh();
+          })
+          .catch((error) => {
+            toast.error("Coludn't upvote");
+          });
       } else
         axios
           .patch(`/api/votes/${defaultVote.id}`, {
@@ -227,6 +242,10 @@ const CommentCard = ({
   }
 
   function handleDownVote() {
+    if (!session?.user) {
+      signIn("google");
+      return;
+    }
     if (!defaultVote) {
       axios
         .post("/api/votes", {
@@ -242,7 +261,15 @@ const CommentCard = ({
         });
     } else {
       if (defaultVote.type === "DOWNVOTE") {
-        axios.delete(`/api/votes/${defaultVote.id}`);
+        axios
+          .delete(`/api/votes/${defaultVote.id}`)
+          .then((res) => {
+            saveScroll();
+            router.refresh();
+          })
+          .catch((error) => {
+            toast.error("Coludn't downvote");
+          });
       } else
         axios
           .patch(`/api/votes/${defaultVote.id}`, {

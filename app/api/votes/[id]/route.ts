@@ -45,12 +45,12 @@ export async function PATCH(request: NextRequest, { params: { id } }: Props) {
 export async function DELETE(request: NextRequest, { params: { id } }: Props) {
   const session = await getServerSession();
 
-  if (!session?.user)
-    return NextResponse.json({ message: "Invalid request" }, { status: 401 });
+  // if (!session?.user)
+  //   return NextResponse.json({ message: "Invalid request" }, { status: 401 });
 
-  const user = await prisma?.user.findUnique({
-    where: { email: session.user.email! },
-  });
+  // const user = await prisma?.user.findUnique({
+  //   where: { email: session.user.email! },
+  // });
 
   const vote = await prisma?.vote.findUnique({
     where: { id: parseInt(id) },
@@ -59,12 +59,9 @@ export async function DELETE(request: NextRequest, { params: { id } }: Props) {
   if (!vote)
     return NextResponse.json({ message: "Vote not found" }, { status: 404 });
 
-  if (vote.userId !== user?.id)
-    return NextResponse.json({ message: "You can't change others vote" });
+  // if (vote.userId !== user?.id)
+  //   return NextResponse.json({ message: "You can't change others vote" });
 
   await prisma.vote.delete({ where: { id: parseInt(id) } });
-  return NextResponse.json(
-    { message: `Vote with id of ${id} was deleted` },
-    { status: 204 }
-  );
+  return NextResponse.json({ message: `Vote with id of ${id} was deleted` });
 }
