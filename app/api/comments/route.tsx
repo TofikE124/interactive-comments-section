@@ -36,7 +36,7 @@ export async function POST(request: NextResponse) {
 
 export type CommentWithPublisher = { publisher: User; votes: Vote[] } & Comment;
 export type CommentWithReplies = {
-  Children: Comment[];
+  children: Comment[];
   votes: Vote[];
 } & Comment;
 export type CommentWithPublisherAndReplies = CommentWithReplies &

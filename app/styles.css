@@ -14,7 +14,8 @@
   grid-template-areas:
     "header header"
     "content content"
-    "vote reply";
+    "vote reply"
+    "reply-count reply-count";
   background-color: white;
   border-radius: 8px;
   padding: 1rem;
@@ -92,6 +93,11 @@
   opacity: 0.6;
 }
 
+.comment-card__replies-count {
+  grid-area: reply-count;
+  width: fit-content;
+}
+
 @media (min-width: 768px) {
   .comments-container {
     gap: 1.25rem;
@@ -104,7 +110,11 @@
     row-gap: 1rem;
     grid-template-areas:
       "vote header reply"
-      "vote content content";
+      "vote content content"
+      "reply-count reply-count reply-count";
+  }
+  .comment-card__replies-count {
+    justify-self: start;
   }
 }
 

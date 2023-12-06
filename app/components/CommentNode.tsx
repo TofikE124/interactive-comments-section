@@ -1,13 +1,13 @@
 import { TreeNode } from "@/prisma/tree";
 import React from "react";
-import { CommentWithPublisher } from "../api/comments/route";
+import { CommentWithPublisherAndReplies } from "../api/comments/route";
 import CommentCard from "./CommentCard";
 import { getServerSession } from "next-auth";
 
 const CommentNode = async ({
   commentNode,
 }: {
-  commentNode: TreeNode<CommentWithPublisher>[];
+  commentNode: TreeNode<CommentWithPublisherAndReplies>[];
 }) => {
   const session = await getServerSession();
   const user = await prisma?.user.findUnique({

@@ -1,6 +1,9 @@
 import prisma from "@/prisma/client";
 import CommentCard from "./CommentCard";
-import { CommentWithPublisher } from "../api/comments/route";
+import {
+  CommentWithPublisher,
+  CommentWithPublisherAndReplies,
+} from "../api/comments/route";
 import { TreeNode } from "@/prisma/tree";
 import CommentNode from "./CommentNode";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
@@ -16,28 +19,29 @@ interface Props {
 
 async function getCommentNode(
   commentsId: string[]
-): Promise<TreeNode<CommentWithPublisher> | null> {
-  let commentNode: TreeNode<CommentWithPublisher> | null = null;
+): Promise<TreeNode<CommentWithPublisherAndReplies> | null> {
+  let commentNode: TreeNode<CommentWithPublisherAndReplies> | null = null;
 
   if (commentsId?.length) {
     let commentsParent = await prisma.comment.findUnique({
       where: { id: Number(commentsId[0]) },
-      include: { publisher: true, votes: true },
+      include: { publisher: true, votes: true, children: true },
     });
 
-    commentNode = new TreeNode(
+    commentNode = new TreeNode<CommentWithPublisherAndReplies>(
       null,
       commentsParent!,
       commentsParent?.id.toString()!
     );
-    let currentParent: TreeNode<CommentWithPublisher> | null = commentNode;
+    let currentParent: TreeNode<CommentWithPublisherAndReplies> | null =
+      commentNode;
     for (let i = 0; i < commentsId?.length; i++) {
       const comments = await prisma.comment.findMany({
         where: { parent_id: Number(commentsId[i]) },
-        include: { publisher: true, votes: true },
+        include: { publisher: true, votes: true, children: true },
         orderBy: { createdAt: "desc" },
       });
-      let nextParent: TreeNode<CommentWithPublisher> | null = null;
+      let nextParent: TreeNode<CommentWithPublisherAndReplies> | null = null;
 
       comments.map((comment) => {
         const child = new TreeNode(
@@ -59,11 +63,6 @@ async function getCommentNode(
 }
 
 const CommentsSection = async ({ commentsId }: Props) => {
-  const comments = await prisma.comment.findMany({
-    where: { parent_id: null },
-    orderBy: { createdAt: "asc" },
-    include: { votes: true, publisher: true },
-  });
   const commentNode = await getCommentNode(commentsId);
 
   if (commentNode && commentsId) {
@@ -77,6 +76,11 @@ const CommentsSection = async ({ commentsId }: Props) => {
       </div>
     );
   }
+  const comments = await prisma.comment.findMany({
+    where: { parent_id: null },
+    orderBy: { createdAt: "asc" },
+    include: { votes: true, children: true, publisher: true },
+  });
 
   const session = await getServerSession();
   let user: User | null = null;

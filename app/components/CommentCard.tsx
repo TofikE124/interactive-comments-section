@@ -13,13 +13,18 @@ import deleteIcon from "../../public/images/icons/icon-delete.svg";
 import editIcon from "../../public/images/icons/icon-edit.svg";
 import replyIcon from "../../public/images/icons/icon-reply.svg";
 
-import { CommentWithPublisher } from "../api/comments/route";
+import {
+  CommentWithPublisher,
+  CommentWithPublisherAndReplies,
+  CommentWithReplies,
+} from "../api/comments/route";
 import CommentInput from "./CommentInput";
 import DeleteComment from "./DeleteComment";
 import UpDownVote from "./UpDownVote";
 import axios from "axios";
 import { Vote, VoteType } from "@prisma/client";
 import toast from "react-hot-toast";
+import { Badge } from "@radix-ui/themes";
 
 const CommentCard = ({
   comment,
@@ -27,7 +32,7 @@ const CommentCard = ({
   path,
   parentPath,
 }: {
-  comment: CommentWithPublisher;
+  comment: CommentWithPublisherAndReplies;
   currentUserId?: string;
   path?: string;
   parentPath?: string;
@@ -138,6 +143,9 @@ const CommentCard = ({
           {CommentContent}
           {CommentVotes}
           {CommentActions}
+          <Badge className="comment-card__replies-count">
+            Replies: {comment.children?.length || 0}
+          </Badge>
         </div>
         <div>
           {searchParams.get("replyId") === comment.id.toString() && (
