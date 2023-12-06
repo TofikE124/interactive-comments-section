@@ -13,7 +13,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "ibb.co",
+        hostname: "i.ibb.co",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn3.iconfinder.com",
       },
     ],
   },

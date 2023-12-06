@@ -62,6 +62,7 @@ const CommentCard = ({
     );
     return count;
   }
+  console.log(user.image);
   const isMine = user?.email === session?.user?.email;
   const isEditting = searchParams.get("edit") === comment.id.toString();
   const isReplying = searchParams.get("reply") === comment.id.toString();
@@ -98,6 +99,10 @@ const CommentCard = ({
         <button className="comment-card__cta__edit">
           <Image src={editIcon} alt="reply icon" />
           <p>Edit</p>
+        </button>
+        <button className="comment-card__cta__reply">
+          <Image src={replyIcon} alt="reply icon" />
+          <p>Reply</p>
         </button>
       </div>
     ) : (
