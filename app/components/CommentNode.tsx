@@ -3,6 +3,7 @@ import React from "react";
 import { CommentWithPublisherAndReplies } from "../api/comments/route";
 import CommentCard from "./CommentCard";
 import { getServerSession } from "next-auth";
+import prisma from "@/prisma/client";
 
 const CommentNode = async ({
   commentNode,
@@ -20,7 +21,7 @@ const CommentNode = async ({
         <CommentCard
           comment={commentNode[0].value}
           path={commentNode[0].path}
-          currentUserId={user?.id!}
+          currentUserId={user?.id.toString()!}
         />
         {commentNode[0].children.length ? (
           <div className="comment-children">
@@ -32,14 +33,14 @@ const CommentNode = async ({
       </>
     );
   } else {
-    return commentNode.map((commentBlob) => {
+    return commentNode?.map((commentBlob) => {
       return (
         <>
           <CommentCard
             comment={commentBlob.value}
             path={commentBlob.path}
             parentPath={commentBlob.parent?.path}
-            currentUserId={user?.id!}
+            currentUserId={user?.id!.toString()}
           />
           {commentBlob.children[0] ? (
             <div className="comment-children">

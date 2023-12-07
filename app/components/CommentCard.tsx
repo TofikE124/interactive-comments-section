@@ -115,7 +115,7 @@ const CommentCard = ({
     );
 
   const defaultVote = comment.votes.filter(
-    (vote) => vote.userId === currentUserId
+    (vote) => vote.userId.toString() === currentUserId
   )?.[0];
   const CommentVotes = (
     <div className="comment-card__vote">

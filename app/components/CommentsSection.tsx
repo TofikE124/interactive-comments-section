@@ -43,7 +43,7 @@ async function getCommentNode(
       });
       let nextParent: TreeNode<CommentWithPublisherAndReplies> | null = null;
 
-      comments.map((comment) => {
+      comments?.map((comment) => {
         const child = new TreeNode(
           currentParent,
           comment,
@@ -92,17 +92,18 @@ const CommentsSection = async ({ commentsId }: Props) => {
 
   return (
     <div className="comments-container ">
-      {comments.map((comment) => {
+      {comments?.map((comment) => {
         return (
           <CommentCard
             key={comment.id}
             comment={comment}
-            currentUserId={user?.id!}
+            currentUserId={user?.id!.toString()}
             path={comment.id.toString()}
           />
         );
       })}
-      <ScrollToBottom />
+      ;
+      <ScrollToBottom comments={comments} />
     </div>
   );
 };

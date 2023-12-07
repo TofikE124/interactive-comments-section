@@ -41,7 +41,7 @@ const DeleteComment = ({
         <Dialog.Title>Delete comment</Dialog.Title>
         <Dialog.Description size="2" mb="4">
           Are you sure you want to delete this comment? This will remove the
-          comment and can’t be undone.{" "}
+          comment and can’t be undone.
         </Dialog.Description>
 
         <Flex gap="3" mt="4" justify="center">
@@ -51,12 +51,17 @@ const DeleteComment = ({
               onClick={() => cancel()}
               variant="soft"
               color="gray"
+              style={{ backgroundColor: "#0000330f" }}
             >
               Cancel
             </Button>
           </Dialog.Close>
           <Dialog.Close>
-            <Button color="red" size="4" onClick={() => deleteComment()}>
+            <Button
+              style={{ backgroundColor: "var(--Soft-Red)" }}
+              size="4"
+              onClick={() => deleteComment()}
+            >
               Delete
             </Button>
           </Dialog.Close>
