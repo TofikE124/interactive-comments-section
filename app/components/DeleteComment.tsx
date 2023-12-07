@@ -2,7 +2,9 @@
 import { Button, Dialog, Flex } from "@radix-ui/themes";
 import axios from "axios";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import Spinner from "./Spinner";
 
 const DeleteComment = ({
   commentId,
@@ -13,8 +15,9 @@ const DeleteComment = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-
+  const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
+
   const isDeleting = searchParams.get("delete") === commentId;
   const cancel = () => {
     localStorage.setItem("persistentScroll", window.scrollY.toString());
@@ -24,6 +27,8 @@ const DeleteComment = ({
   };
 
   const deleteComment = () => {
+    setIsLoading(true);
+
     axios
       .delete(`/api/comments/${commentId}`)
       .then((res) => {
@@ -33,6 +38,9 @@ const DeleteComment = ({
       })
       .catch((error) => {
         toast.error("Couldn't delete comment");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
   return (
@@ -62,7 +70,7 @@ const DeleteComment = ({
               size="4"
               onClick={() => deleteComment()}
             >
-              Delete
+              {isLoading ? <Spinner /> : "Delete"}
             </Button>
           </Dialog.Close>
         </Flex>

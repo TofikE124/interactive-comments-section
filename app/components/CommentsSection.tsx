@@ -22,11 +22,14 @@ async function getCommentNode(
 ): Promise<TreeNode<CommentWithPublisherAndReplies> | null> {
   let commentNode: TreeNode<CommentWithPublisherAndReplies> | null = null;
 
+  if (commentsId[0].length > 8) return null;
+
   if (commentsId?.length) {
     let commentsParent = await prisma.comment.findUnique({
       where: { id: Number(commentsId[0]) },
       include: { publisher: true, votes: true, children: true },
     });
+    if (!commentsParent) return null;
 
     commentNode = new TreeNode<CommentWithPublisherAndReplies>(
       null,
